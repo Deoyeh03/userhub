@@ -3,11 +3,11 @@ import usersData from '@/data/users.json';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username } = await request.json();
+    const { username, password } = await request.json();
 
-    if (!username) {
+    if (!username || !password) {
       return NextResponse.json(
-        { error: 'Username is required' },
+        { error: 'Username and password are required' },
         { status: 400 }
       );
     }
@@ -20,6 +20,14 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
+        { status: 404 } // Specific status for client redirect
+      );
+    }
+
+    // Hardcoded password check for assessment
+    if (password !== 'userhub123') {
+       return NextResponse.json(
+        { error: 'Invalid password' },
         { status: 401 }
       );
     }
@@ -43,7 +51,7 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
